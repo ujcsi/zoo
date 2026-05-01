@@ -1,3 +1,22 @@
 spring:
   application:
     name: nyeuni
+  datasource:
+
+#adatbázis elérése h2 in memomory adatbázis és az adatbázis neve a zoodb
+    url: jdbc:h2:mem:zoodb
+    #felhasználónév
+    username: admin
+    #jelszó
+    password: pw
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+# A generálst SQL utasítások láthatóságának engedélyezése
+    show-sql: true
+  h2:
+    console:
+      #browser elérés bekapcsolása
+      enabled: true
+      #browser útvonal megadása
+      path: /zoo

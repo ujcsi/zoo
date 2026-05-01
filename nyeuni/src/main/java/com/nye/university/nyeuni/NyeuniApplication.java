@@ -1,3 +1,4 @@
+//A programunk belépési pontja
 package com.nye.university.nyeuni;
 
 import org.springframework.boot.SpringApplication;
