@@ -1,0 +1,2 @@
+# zoo
+gondozok es allatok
