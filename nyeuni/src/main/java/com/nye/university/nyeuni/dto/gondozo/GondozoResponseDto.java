@@ -1,6 +1,6 @@
 package com.nye.university.nyeuni.dto.gondozo;
 
-import jakarta.validation.constraints.NotBlank;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class GondozoRequestDto {
 
-    @NotBlank(message = "Gondozo terulet megadasa kotelezo!")
+public class GondozoResponseDto {
+    private Long id;
     private String terulet;
     private String gondozonev;
-
 }
