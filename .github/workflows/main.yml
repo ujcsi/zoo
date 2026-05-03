@@ -10,20 +10,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # ★ 1. LÉNYEGES MÓDOSÍTÁS: Alapértelmezett munkakönyvtár beállítása ★
+    defaults:
+      run:
+        working-directory: ./nyeuni
+
     steps:
     - uses: actions/checkout@v4
-    
-    - name: JDK 17 beallitasa
+
+    - name: JDK 17 beállítása
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-    
-    - name: Maven build
+
+    - name: Fordítás és tesztelés Mavennel
+      # Most már itt a mvn parancs a ./nyeuni mappában fut
       run: mvn clean package
-    
-    - name: JAR mentese
+
+    - name: JAR fájl feltöltése artefaktként
       uses: actions/upload-artifact@v4
       with:
-        name: spring-app
-        path: target/*.jar
+        name: spring-boot-app
+        # ★ 2. LÉNYEGES MÓDOSÍTÁS: Helyes elérési út megadása ★
+        path: nyeuni/target/*.jar
