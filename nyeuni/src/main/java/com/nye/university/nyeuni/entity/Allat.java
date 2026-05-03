@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 //Állatok tábla létrehozása
 @Entity
 @Table(name = "allatok")
@@ -13,11 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class Allat {
+
+
     @Id
-    //Automatikusan generált azonosító
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //Automatikusan generált azonosító
     private Long id;
     //ezt kötelező kitölteni
     @Column(nullable = false)

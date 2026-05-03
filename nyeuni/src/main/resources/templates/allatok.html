@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Állatok kezelése - CRUD</title>
+</head>
+<body>
+
+<h1>Állatok</h1>
+
+<h2> Új állat</h2>
+<form id="createForm">
+    Név: <input type="text" id="nev" required><br><br>
+    Kor: <input type="number" id="kor"><br><br>
+    Gondozó ID: <input type="number" id="gondozoId"><br><br>
+    <button type="button" onclick="createAllat()">Hozzáadás</button>
+    <button type="reset">Törlés</button>
+</form>
+
+<hr>
+
+<h2> Állatok</h2>
+<table border="1">
+    <thead>
+    <tr><th>ID</th><th>Név</th><th>Kor</th><th>Gondozó ID</th><th>Műveletek</th></tr>
+    </thead>
+    <tbody id="allatokLista">
+    <tr><td colspan="5">Betöltés...</td></tr>
+    </tbody>
+</table>
+
+<h2> Állat szerkesztése</h2>
+<form id="updateForm">
+    Szerkesztendő ID: <input type="number" id="updateId" required><br><br>
+    Új név: <input type="text" id="updateNev"><br><br>
+    Új kor: <input type="number" id="updateKor"><br><br>
+    Új gondozó ID: <input type="number" id="updateGondozoId"><br><br>
+    <button type="button" onclick="updateAllat()">Mentés</button>
+</form>
+
+<script>
+    const API_URL = 'http://localhost:8080/api/allat';
+
+    function loadAllats() {
+        fetch(API_URL)
+            .then(res => res.json())
+            .then(data => {
+                let html = '';
+                for (let a of data) {
+                    html += `<tr>
+                        <td>${a.id}</td>
+                        <td>${a.nev}</td>
+                        <td>${a.kor || '-'}</td>
+                        <td>${a.gondozoId || '-'}</td>
+                        <td>
+                            <button onclick="viewAllat(${a.id})">Részletek</button>
+                            <button onclick="deleteAllat(${a.id})">Törlés</button>
+                        </td>
+                    </tr>`;
+                }
+                document.getElementById('allatokLista').innerHTML = html || '<tr><td colspan="5">Nincs állat</td></tr>';
+            })
+            .catch(() => alert('Hiba a betöltéskor'));
+    }
+
+    // CREATE
+    function createAllat() {
+        const nev = document.getElementById('nev').value;
+        const kor = document.getElementById('kor').value;
+        const gondozoId = document.getElementById('gondozoId').value;
+
+        if (!nev) {
+            alert('Név kötelező!');
+            return;
+        }
+
+        const adat = {
+            nev: nev,
+            kor: kor ? parseInt(kor) : null,
+            gondozoId: gondozoId ? parseInt(gondozoId) : null
+        };
+
+        fetch(API_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(adat)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                return res.json();
+            })
+            .then(() => {
+                alert('Állat hozzáadva');
+                document.getElementById('createForm').reset();
+                loadAllats();
+            })
+            .catch(() => alert('Hiba a mentéskor'));
+    }
+
+    // READ (egy elem megtekintése)
+    function viewAllat(id) {
+        fetch(`${API_URL}/${id}`)
+            .then(res => res.json())
+            .then(a => {
+                alert(`ID: ${a.id}\nNév: ${a.nev}\nKor: ${a.kor || '-'}\nGondozó ID: ${a.gondozoId || '-'}`);
+            })
+            .catch(() => alert('Hiba a részletek betöltésekor'));
+    }
+
+    // UPDATE
+    function updateAllat() {
+        const id = document.getElementById('updateId').value;
+        const nev = document.getElementById('updateNev').value;
+        const kor = document.getElementById('updateKor').value;
+        const gondozoId = document.getElementById('updateGondozoId').value;
+
+        if (!id) {
+            alert('Adj meg egy ID-t a szerkesztéshez!');
+            return;
+        }
+
+        const adat = {};
+        if (nev) adat.nev = nev;
+        if (kor) adat.kor = parseInt(kor);
+        if (gondozoId) adat.gondozoId = parseInt(gondozoId);
+
+        fetch(`${API_URL}/${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(adat)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                return res.json();
+            })
+            .then(() => {
+                alert('Állat frissítve');
+                document.getElementById('updateForm').reset();
+                loadAllats();
+            })
+            .catch(() => alert('Hiba a frissítéskor'));
+    }
+
+    // DELETE
+    function deleteAllat(id) {
+        if (!confirm('Biztosan törlöd?')) return;
+        fetch(`${API_URL}/${id}`, {method: 'DELETE'})
+            .then(res => {
+                if (!res.ok) throw new Error();
+                alert('Törölve');
+                loadAllats();
+            })
+            .catch(() => alert('Hiba a törléskor'));
+    }
+
+    loadAllats();
+</script>
+
+<br>
+<hr>
+<a href="/gondozok">Gondozók</a> | <a href="/">Főoldal</a>
+</body>
+</html>

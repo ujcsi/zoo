@@ -1,5 +1,6 @@
 package com.nye.university.nyeuni.controller;
 
+import java.util.List;
 
 import com.nye.university.nyeuni.dto.gondozo.GondozoRequestDto;
 import com.nye.university.nyeuni.dto.gondozo.GondozoResponseDto;
@@ -8,14 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
 
 @RestController
 //ezt a gondozo controllert innentől kezdve a http://localhost:8080/api/gondozo
 @RequestMapping("/api/gondozo")
 @RequiredArgsConstructor
 public class GondozoController {
-//ezt a gondozo controllert innentől kezdve a http://localhost:8080/api/gondozo
 
     private final GondozoService gondozoService;
 

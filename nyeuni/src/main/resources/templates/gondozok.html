@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gondozók kezelése - CRUD</title>
+</head>
+<body>
+
+<h1>Gondozók</h1>
+
+<h2>Új gondozó</h2>
+<form id="createForm">
+    Név: <input type="text" id="gondozonev" required><br><br>
+    Terület: <input type="text" id="terulet"><br><br>
+    <button type="button" onclick="createGondozo()">Hozzáadás</button>
+    <button type="reset">Törlés</button>
+</form>
+
+<hr>
+
+<h2>Gondozók</h2>
+<table border="1">
+    <thead>
+    <tr><th>ID</th><th>Név</th><th>Terület</th><th>Műveletek</th></tr>
+    </thead>
+    <tbody id="gondozokLista">
+    <tr><td colspan="4">Betöltés...</td></tr>
+    </tbody>
+</table>
+
+<h2>Gondozó szerkesztése</h2>
+<form id="updateForm">
+    Szerkesztendő ID: <input type="number" id="updateId" required><br><br>
+    Új név: <input type="text" id="updateGondozonev"><br><br>
+    Új terület: <input type="text" id="updateTerulet"><br><br>
+    <button type="button" onclick="updateGondozo()">Mentés</button>
+</form>
+
+<script>
+    const API_URL = 'http://localhost:8080/api/gondozo';
+
+    function loadGondozok() {
+        fetch(API_URL)
+            .then(res => res.json())
+            .then(data => {
+                let html = '';
+                for (let g of data) {
+                    html += `<tr>
+                        <td>${g.id}</td>
+                        <td>${g.gondozonev}</td>
+                        <td>${g.terulet || '-'}</td>
+                        <td>
+                            <button onclick="viewGondozo(${g.id})">Részletek</button>
+                            <button onclick="deleteGondozo(${g.id})">Törlés</button>
+                        </td>
+                    </tr>`;
+                }
+                document.getElementById('gondozokLista').innerHTML = html || '<tr><td colspan="4">Nincs gondozó</td></tr>';
+            })
+            .catch(() => alert('Hiba a betöltéskor'));
+    }
+
+    function createGondozo() {
+        const gondozonev = document.getElementById('gondozonev').value;
+        const terulet = document.getElementById('terulet').value;
+
+        if (!gondozonev) {
+            alert('Név kötelező!');
+            return;
+        }
+
+        const adat = {
+            gondozonev: gondozonev,
+            terulet: terulet || null
+        };
+
+        fetch(API_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(adat)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                return res.json();
+            })
+            .then(() => {
+                alert('Gondozó hozzáadva');
+                document.getElementById('createForm').reset();
+                loadGondozok();
+            })
+            .catch(() => alert('Hiba a mentéskor'));
+    }
+
+    function viewGondozo(id) {
+        fetch(`${API_URL}/${id}`)
+            .then(res => res.json())
+            .then(g => {
+                alert(`ID: ${g.id}\nNév: ${g.gondozonev}\nTerület: ${g.terulet || '-'}`);
+            })
+            .catch(() => alert('Hiba a részletek betöltésekor'));
+    }
+
+    function updateGondozo() {
+        const id = document.getElementById('updateId').value;
+        const gondozonev = document.getElementById('updateGondozonev').value;
+        const terulet = document.getElementById('updateTerulet').value;
+
+        if (!id) {
+            alert('Adj meg egy ID-t a szerkesztéshez!');
+            return;
+        }
+
+        const adat = {};
+        if (gondozonev) adat.gondozonev = gondozonev;
+        if (terulet) adat.terulet = terulet;
+
+        fetch(`${API_URL}/${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(adat)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                return res.json();
+            })
+            .then(() => {
+                alert('Gondozó frissítve');
+                document.getElementById('updateForm').reset();
+                loadGondozok();
+            })
+            .catch(() => alert('Hiba a frissítéskor'));
+    }
+
+    function deleteGondozo(id) {
+        if (!confirm('Biztosan törlöd ezt a gondozót?')) return;
+        fetch(`${API_URL}/${id}`, {method: 'DELETE'})
+            .then(res => {
+                if (!res.ok) throw new Error();
+                alert('Törölve');
+                loadGondozok();
+            })
+            .catch(() => alert('Hiba a törléskor'));
+    }
+
+    loadGondozok();
+</script>
+<br>
+<hr>
+<a href="/allatok">Állatok</a> | <a href="/">Főoldal</a>
+</body>
+</html>

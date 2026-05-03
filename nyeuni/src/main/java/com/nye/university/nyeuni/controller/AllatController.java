@@ -1,15 +1,20 @@
 package com.nye.university.nyeuni.controller;
 
+import java.util.List;
+
 import com.nye.university.nyeuni.dto.allat.AllatRequestDto;
 import com.nye.university.nyeuni.dto.allat.AllatResponseDto;
-import com.nye.university.nyeuni.dto.gondozo.GondozoRequestDto;
 import com.nye.university.nyeuni.service.AllatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
+
+
+
 
 @RestController
+
 //ezt az allat controllert innentől kezdve a http://localhost:8080/api/allat
 @RequestMapping("/api/allat")
 @RequiredArgsConstructor
@@ -20,6 +25,7 @@ public class AllatController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+
     public AllatResponseDto createAllat(@RequestBody AllatRequestDto requestDto) {
         return allatService.createAllat(requestDto);
     }
