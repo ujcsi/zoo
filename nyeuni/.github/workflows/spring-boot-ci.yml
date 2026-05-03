@@ -1,0 +1,40 @@
+name: Spring Boot CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Kód letöltése a repository-ból
+        uses: actions/checkout@v4
+
+      - name: 2. JDK 17 telepítése
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 3. Maven cache beállítása (gyorsítja a build-eket)
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: 4. Függőségek ellenőrzése és letöltése
+        run: mvn dependency:resolve
+
+      - name: 5. Spring Boot alkalmazás buildelése és tesztelése
+        run: mvn clean package
+
+      - name: 6. Generált JAR fájl mentése artifact-ként
+        uses: actions/upload-artifact@v4
+        with:
+          name: spring-boot-application
+          path: target/*.jar
